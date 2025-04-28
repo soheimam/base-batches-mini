@@ -168,9 +168,9 @@ export default function App() {
           
           {activeView === 'results' && quizResult && (
             <div className="space-y-4 animate-fade-in">
-              <div className="bg-[var(--app-card-bg)] backdrop-blur-md rounded-xl shadow-lg border border-[var(--app-card-border)] overflow-hidden p-5">
-                <h2 className="text-xl font-bold text-center mb-4">Share Your Result</h2>
-                <p className="text-[var(--app-foreground-muted)] mb-6 text-center">
+              <div className="p-5 text-center">
+                <h2 className="text-xl font-bold mb-4">Share Your Result</h2>
+                <p className="text-[var(--app-foreground-muted)] mb-6">
                   Let your friends know about your Web3 personality type!
                 </p>
                 <div className="space-y-3">

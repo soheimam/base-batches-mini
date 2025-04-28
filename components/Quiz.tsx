@@ -146,9 +146,9 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
   if (!started) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
-          <h2 className="text-2xl font-bold text-center mb-4 text-purple-900 dark:text-purple-100">SwiftUI Fundamentals</h2>
-          <p className="text-purple-700 dark:text-purple-300 mb-6 text-center">
+        <div className="text-center p-6">
+          <h2 className="text-2xl font-bold mb-4 text-purple-900 dark:text-purple-100">SwiftUI Fundamentals</h2>
+          <p className="text-purple-700 dark:text-purple-300 mb-8">
             Explore the core principles of SwiftUI with our introductory course, designed to equip you with a solid foundation in building intuitive and responsive user interfaces.
           </p>
           <div className="flex justify-center">
@@ -169,8 +169,8 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
     
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
-          <h2 className="text-xl font-bold text-center mb-2 text-purple-900 dark:text-purple-100">Your Web3 Personality</h2>
+        <div className="text-center p-6">
+          <h2 className="text-xl font-bold mb-2 text-purple-900 dark:text-purple-100">Your Web3 Personality</h2>
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 flex items-center justify-center">
               <span className="text-white text-4xl font-bold">
@@ -178,8 +178,8 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
               </span>
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-center mb-2 text-purple-700 dark:text-purple-300">{personalityType.title}</h3>
-          <p className="text-purple-700 dark:text-purple-300 mb-6 text-center">
+          <h3 className="text-lg font-semibold mb-2 text-purple-700 dark:text-purple-300">{personalityType.title}</h3>
+          <p className="text-purple-700 dark:text-purple-300 mb-6">
             {personalityType.description}
           </p>
           <div className="flex justify-center">
@@ -204,7 +204,7 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
+      <div className="p-6">
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-purple-700 dark:text-purple-300">Question {currentQuestion + 1} of {questions.length}</span>

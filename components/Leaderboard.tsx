@@ -144,7 +144,7 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
   if (loading) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
+        <div className="p-6">
           <div className="flex justify-center items-center p-10">
             <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
           </div>
@@ -156,7 +156,7 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
   if (error) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
+        <div className="p-6">
           <div className="text-center p-4">
             <p className="text-red-500 mb-4">{error}</p>
             <Button 
@@ -173,8 +173,8 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden">
-        <div className="px-6 py-4 border-b border-purple-200 dark:border-purple-800">
+      <div>
+        <div className="px-6 py-4">
           <h3 className="text-lg font-medium text-purple-900 dark:text-purple-100">
             Personality Leaderboard
           </h3>
@@ -305,7 +305,7 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
                     No users found with this filter.
                   </p>
                 ) : (
-                  <div className="overflow-hidden rounded-lg border border-purple-200 dark:border-purple-800 mt-3">
+                  <div className="mt-3 overflow-hidden">
                     <table className="min-w-full divide-y divide-purple-200 dark:divide-purple-800">
                       <thead className="bg-purple-200/50 dark:bg-purple-800/50">
                         <tr>
