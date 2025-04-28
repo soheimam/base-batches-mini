@@ -19,16 +19,17 @@ import {
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { Button } from "./components/DemoComponents";
-import { Icon } from "./components/DemoComponents";
-// import { Home } from "./components/DemoComponents";
-// import { Features } from "./components/DemoComponents";
-import { ShareButton } from "./components/ShareButton";
+import { Button } from "../components/DemoComponents";
+import { Icon } from "../components/DemoComponents";
+import { Quiz, QuizResult } from "../components/Quiz";
+import { Leaderboard } from "../components/Leaderboard";
+import { ShareButton } from "../components/ShareButton";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
-  // const [activeTab, setActiveTab] = useState("home");
+  const [activeView, setActiveView] = useState<'quiz' | 'results' | 'leaderboard'>('quiz');
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
@@ -43,6 +44,33 @@ export default function App() {
     const frameAdded = await addFrame();
     setFrameAdded(Boolean(frameAdded));
   }, [addFrame]);
+
+  const handleQuizComplete = useCallback(async (result: QuizResult) => {
+    setQuizResult(result);
+    setActiveView('results');
+    
+    // Store result in Redis
+    try {
+      const response = await fetch('/api/quiz/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(result),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to submit quiz result:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error submitting quiz result:', error);
+    }
+  }, []);
+
+  const handleQuizStart = useCallback(() => {
+    // Analytics or other actions when quiz starts
+    console.log('Quiz started by user:', context?.user.fid);
+  }, [context?.user.fid]);
 
   const saveFrameButton = useMemo(() => {
     if (context && !context.client.added) {
@@ -97,8 +125,66 @@ export default function App() {
         </header>
 
         <main className="flex-1">
-          <h1>Welcome to the MiniApp {context?.user.displayName}</h1>
-          <ShareButton userFid={context?.user.fid || 20390} />
+          <h1 className="text-2xl font-bold text-center mb-6">Web3 Personality Quiz</h1>
+          
+          {/* View navigation */}
+          <div className="flex space-x-2 mb-6">
+            <Button 
+              variant={activeView === 'quiz' ? 'primary' : 'ghost'} 
+              size="sm" 
+              className="flex-1"
+              onClick={() => setActiveView('quiz')}
+            >
+              Quiz
+            </Button>
+            <Button 
+              variant={activeView === 'results' && quizResult ? 'primary' : 'ghost'} 
+              size="sm" 
+              className="flex-1"
+              onClick={() => quizResult && setActiveView('results')}
+              disabled={!quizResult}
+            >
+              Your Result
+            </Button>
+            <Button 
+              variant={activeView === 'leaderboard' ? 'primary' : 'ghost'} 
+              size="sm" 
+              className="flex-1"
+              onClick={() => setActiveView('leaderboard')}
+            >
+              Leaderboard
+            </Button>
+          </div>
+          
+          {/* Active view content */}
+          {activeView === 'quiz' && (
+            <Quiz 
+              userFid={context?.user.fid || 0} 
+              onComplete={handleQuizComplete}
+              onStart={handleQuizStart}
+            />
+          )}
+          
+          {activeView === 'results' && quizResult && (
+            <div className="space-y-4 animate-fade-in">
+              <div className="bg-[var(--app-card-bg)] backdrop-blur-md rounded-xl shadow-lg border border-[var(--app-card-border)] overflow-hidden p-5">
+                <h2 className="text-xl font-bold text-center mb-4">Share Your Result</h2>
+                <p className="text-[var(--app-foreground-muted)] mb-6 text-center">
+                  Let your friends know about your Web3 personality type!
+                </p>
+                <div className="space-y-3">
+                  <ShareButton userFid={context?.user.fid || 0} quizResult={quizResult} />
+                  <Button variant="outline" className="w-full" onClick={() => setActiveView('leaderboard')}>
+                    View Leaderboard
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {activeView === 'leaderboard' && (
+            <Leaderboard userFid={context?.user.fid || 0} />
+          )}
         </main>
 
         <footer className="mt-2 pt-4 flex justify-center">
