@@ -32,7 +32,9 @@ export function ShareButton({ userFid, quizResult }: ShareButtonProps) {
         const personalityTitle = personalityTypes[quizResult.personalityType] || quizResult.personalityType;
         
         text = `I took the Web3 Personality Quiz and I'm "${personalityTitle}"! Take it yourself and see what you get. 🧠`;
-        imageUrl = `https://my-mini-batches-social.vercel.app/api/quiz/share-image/${userFid}/${quizResult.personalityType}`;
+        
+        // Use the existing dynamic-share-image endpoint with the personality type as a query parameter
+        imageUrl = `https://my-mini-batches-social.vercel.app/api/dynamic-share-image/${userFid}?personality=${quizResult.personalityType}`;
       }
 
       // Launch the Farcaster composer with the image as an embed
