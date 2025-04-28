@@ -49,11 +49,20 @@ export async function GET(
 ) {
   try {
     // Extract the ID from the route parameters
-    const { id } = params;
-
-    // Get the personality type from query parameters
-    const url = new URL(request.url);
-    const personalityType = url.searchParams.get('personality');
+    let { id } = params;
+    
+    // Check if the ID contains a personality type (format: "123/visionary")
+    let personalityType: string | null = null;
+    
+    if (id.includes('/')) {
+      const parts = id.split('/');
+      id = parts[0]; // The actual ID is the first part
+      personalityType = parts[1]; // The personality type is the second part
+    } else {
+      // If not found in path, try to get from query parameters
+      const url = new URL(request.url);
+      personalityType = url.searchParams.get('personality');
+    }
     
     // Get the application's base URL from environment variables
     const appUrl = process.env.NEXT_PUBLIC_URL || "https://my-mini-batches-social.vercel.app";

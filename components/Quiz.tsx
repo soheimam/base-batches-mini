@@ -182,7 +182,14 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
           <p className="text-purple-700 dark:text-purple-300 mb-6">
             {personalityType.description}
           </p>
-          <div className="flex justify-center">
+          <div className="flex flex-col gap-3 items-center">
+            <Button 
+              variant="primary"
+              className="bg-purple-800 hover:bg-purple-900 text-white w-full"
+              onClick={() => onComplete(result)}
+            >
+              Submit Result
+            </Button>
             <Button 
               variant="outline" 
               className="border-purple-600 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-800/40"

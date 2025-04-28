@@ -30,6 +30,7 @@ export default function App() {
   const [frameAdded, setFrameAdded] = useState(false);
   const [activeView, setActiveView] = useState<'quiz' | 'results' | 'leaderboard'>('quiz');
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
@@ -51,6 +52,7 @@ export default function App() {
     
     // Store result in Redis
     try {
+      setSubmitStatus('submitting');
       const response = await fetch('/api/quiz/submit', {
         method: 'POST',
         headers: {
@@ -62,9 +64,13 @@ export default function App() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Failed to submit quiz result:', errorText);
+        setSubmitStatus('error');
+      } else {
+        setSubmitStatus('success');
       }
     } catch (error) {
       console.error('Error submitting quiz result:', error);
+      setSubmitStatus('error');
     }
   }, []);
 
@@ -170,6 +176,29 @@ export default function App() {
             <div className="space-y-4 animate-fade-in">
               <div className="p-5 text-center">
                 <h2 className="text-xl font-bold mb-4">Share Your Result</h2>
+                
+                {submitStatus === 'submitting' && (
+                  <div className="bg-blue-100 text-blue-700 p-2 rounded-md mb-4 flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving your result...
+                  </div>
+                )}
+                
+                {submitStatus === 'success' && (
+                  <div className="bg-green-100 text-green-700 p-2 rounded-md mb-4">
+                    Result saved successfully!
+                  </div>
+                )}
+                
+                {submitStatus === 'error' && (
+                  <div className="bg-red-100 text-red-700 p-2 rounded-md mb-4">
+                    Failed to save result. Try submitting again from the quiz page.
+                  </div>
+                )}
+                
                 <p className="text-[var(--app-foreground-muted)] mb-6">
                   Let your friends know about your Web3 personality type!
                 </p>

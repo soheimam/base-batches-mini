@@ -33,6 +33,8 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
         }
         
         const data = await response.json();
+        console.log('Fetched leaderboard data:', data);
+        
         setEntries(data);
         setFilteredEntries(data);
         
@@ -51,6 +53,36 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
 
     fetchLeaderboard();
   }, [userFid]);
+
+  const refreshLeaderboard = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/quiz/leaderboard?_=' + Date.now()); // Cache-bust
+      
+      if (!response.ok) {
+        throw new Error('Failed to refresh leaderboard data');
+      }
+      
+      const data = await response.json();
+      console.log('Refreshed leaderboard data:', data);
+      
+      setEntries(data);
+      setFilteredEntries(data);
+      
+      // Find current user's personality type
+      const userEntry = data.find((entry: LeaderboardEntry) => entry.userFid === userFid);
+      if (userEntry) {
+        setUserPersonality(userEntry.personalityType);
+      }
+    } catch (err) {
+      console.error('Error refreshing leaderboard:', err);
+      setError('Could not refresh leaderboard. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to fetch filtered user types from Redis
   const fetchUsersByType = async (params: Record<string, string>) => {
@@ -174,10 +206,26 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <div className="px-6 py-4">
+        <div className="px-6 py-4 flex justify-between items-center">
           <h3 className="text-lg font-medium text-purple-900 dark:text-purple-100">
             Personality Leaderboard
           </h3>
+          <Button 
+            variant="ghost"
+            size="sm"
+            onClick={refreshLeaderboard}
+            className="text-purple-600 dark:text-purple-300"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 mr-2 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                Loading...
+              </>
+            ) : (
+              'Refresh'
+            )}
+          </Button>
         </div>
         
         <div className="p-6">

@@ -16,26 +16,51 @@ export async function GET(request: NextRequest) {
     const compatible = searchParams.get('compatible'); // find compatible types for this personality
     const userFid = searchParams.get('userFid'); // current user's FID
 
+    console.log('Fetching user types with params:', { type, compatible, userFid });
+
     // Get all entries from leaderboard
     const limit = 100; // Reasonable limit to avoid overloading
+    let entries = [];
+    
+    // First try fetching from leaderboard sorted set
     const leaderboardData = await redis.zrange('quiz:leaderboard', 0, limit - 1);
     
-    if (!leaderboardData || !Array.isArray(leaderboardData)) {
-      return NextResponse.json([]);
+    if (leaderboardData && Array.isArray(leaderboardData) && leaderboardData.length > 0) {
+      // Parse JSON strings from Redis
+      entries = leaderboardData
+        .filter((entry): entry is string => typeof entry === 'string')
+        .map(entry => {
+          try {
+            return JSON.parse(entry);
+          } catch (error) {
+            console.error('Error parsing leaderboard entry:', error);
+            return null;
+          }
+        })
+        .filter(Boolean);
     }
     
-    // Parse JSON strings from Redis
-    const entries = leaderboardData
-      .filter((entry): entry is string => typeof entry === 'string')
-      .map(entry => {
-        try {
-          return JSON.parse(entry);
-        } catch (error) {
-          console.error('Error parsing leaderboard entry:', error);
-          return null;
+    // If no entries from sorted set, try individual hash keys
+    if (entries.length === 0) {
+      console.log('No entries from leaderboard, trying individual results...');
+      const resultKeys = await redis.keys('quiz:results:*');
+      console.log('Result keys:', resultKeys);
+      
+      if (resultKeys && resultKeys.length > 0) {
+        for (const key of resultKeys) {
+          try {
+            const userData = await redis.hgetall(key);
+            if (userData && Object.keys(userData).length > 0) {
+              entries.push(userData);
+            }
+          } catch (err) {
+            console.error(`Error fetching data for key ${key}:`, err);
+          }
         }
-      })
-      .filter(Boolean);
+      }
+    }
+    
+    console.log(`Found ${entries.length} total entries`);
 
     // Define compatibility relationships
     const personalityCompatibility: Record<string, string[]> = {
@@ -73,6 +98,7 @@ export async function GET(request: NextRequest) {
       }
     }
     
+    console.log(`Returning ${filteredEntries.length} filtered entries`);
     return NextResponse.json(filteredEntries);
   } catch (error) {
     console.error('Error fetching user types:', error);
