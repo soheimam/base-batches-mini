@@ -14,9 +14,14 @@ type LeaderboardEntry = QuizResult & {
 
 export function Leaderboard({ userFid }: LeaderboardProps) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [filteredEntries, setFilteredEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [userPersonality, setUserPersonality] = useState<string | null>(null);
+  const [isFiltering, setIsFiltering] = useState(false);
 
+  // Fetch initial leaderboard data
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
@@ -29,6 +34,13 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
         
         const data = await response.json();
         setEntries(data);
+        setFilteredEntries(data);
+        
+        // Find current user's personality type
+        const userEntry = data.find((entry: LeaderboardEntry) => entry.userFid === userFid);
+        if (userEntry) {
+          setUserPersonality(userEntry.personalityType);
+        }
       } catch (err) {
         console.error('Error fetching leaderboard:', err);
         setError('Could not load leaderboard. Please try again later.');
@@ -38,7 +50,82 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [userFid]);
+
+  // Function to fetch filtered user types from Redis
+  const fetchUsersByType = async (params: Record<string, string>) => {
+    setIsFiltering(true);
+    try {
+      // Add userFid to params
+      const queryParams = new URLSearchParams({
+        ...params,
+        userFid: userFid.toString()
+      }).toString();
+      
+      const response = await fetch(`/api/quiz/user-types?${queryParams}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user types');
+      }
+      
+      const data = await response.json();
+      setFilteredEntries(data);
+    } catch (err) {
+      console.error('Error fetching user types:', err);
+      // Fall back to client-side filtering if Redis query fails
+      clientSideFilter(params);
+    } finally {
+      setIsFiltering(false);
+    }
+  };
+
+  // Fallback to client-side filtering if Redis query fails
+  const clientSideFilter = (params: Record<string, string>) => {
+    if (params.type) {
+      const filtered = entries.filter(entry => entry.personalityType === params.type);
+      setFilteredEntries(filtered);
+    } else if (params.compatible && userPersonality) {
+      const personalityCompatibility: Record<string, string[]> = {
+        'builder': ['connector', 'visionary'],
+        'visionary': ['builder', 'analyst'],
+        'connector': ['builder', 'analyst'],
+        'analyst': ['visionary', 'connector']
+      };
+      
+      const compatibleTypes = personalityCompatibility[userPersonality as keyof typeof personalityCompatibility];
+      const compatibleEntries = entries.filter(entry => 
+        compatibleTypes.includes(entry.personalityType) && entry.userFid !== userFid
+      );
+      
+      setFilteredEntries(compatibleEntries);
+    } else {
+      setFilteredEntries(entries);
+    }
+  };
+
+  const handleFilterChange = (type: string | null) => {
+    setActiveFilter(type);
+    
+    if (type === null) {
+      setFilteredEntries(entries);
+    } else {
+      fetchUsersByType({ type });
+    }
+  };
+
+  const findCompatible = () => {
+    if (!userPersonality) return;
+    
+    setActiveFilter('compatible');
+    fetchUsersByType({ compatible: userPersonality });
+  };
+
+  const findSameType = () => {
+    if (!userPersonality) return;
+    
+    setActiveFilter(userPersonality);
+    fetchUsersByType({ type: userPersonality });
+  };
 
   const personalityDistribution = entries.reduce((acc, entry) => {
     acc[entry.personalityType] = (acc[entry.personalityType] || 0) + 1;
@@ -95,6 +182,58 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
             </p>
           ) : (
             <>
+              {/* Filter options */}
+              <div className="mb-6">
+                <h4 className="text-md font-medium mb-3">Find Your People</h4>
+                
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  {userPersonality && (
+                    <>
+                      <Button 
+                        variant={activeFilter === 'compatible' ? 'primary' : 'outline'} 
+                        onClick={findCompatible}
+                        className="text-sm"
+                        disabled={isFiltering}
+                      >
+                        Find Compatible Types
+                      </Button>
+                      <Button 
+                        variant={activeFilter === userPersonality ? 'primary' : 'outline'} 
+                        onClick={findSameType}
+                        className="text-sm"
+                        disabled={isFiltering}
+                      >
+                        Find Same Type As You
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-4 gap-2">
+                  {Object.entries(personalityTypes).map(([type, data]) => (
+                    <Button 
+                      key={type}
+                      variant={activeFilter === type ? 'primary' : 'ghost'} 
+                      size="sm"
+                      onClick={() => handleFilterChange(type)}
+                      className="text-xs"
+                      disabled={isFiltering}
+                    >
+                      {data.title}
+                    </Button>
+                  ))}
+                  <Button 
+                    variant={activeFilter === null ? 'primary' : 'ghost'} 
+                    size="sm"
+                    onClick={() => handleFilterChange(null)}
+                    className="text-xs"
+                    disabled={isFiltering}
+                  >
+                    All Types
+                  </Button>
+                </div>
+              </div>
+
               {/* Distribution chart */}
               <div className="mb-8">
                 <h4 className="text-md font-medium mb-3">Personality Distribution</h4>
@@ -127,47 +266,73 @@ export function Leaderboard({ userFid }: LeaderboardProps) {
                 </div>
               </div>
 
-              {/* Recent results */}
-              <h4 className="text-md font-medium mb-3">Recent Results</h4>
-              <div className="overflow-hidden rounded-lg border border-[var(--app-card-border)]">
-                <table className="min-w-full divide-y divide-[var(--app-card-border)]">
-                  <thead className="bg-[var(--app-gray)]">
-                    <tr>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
-                        User
-                      </th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
-                        Personality
-                      </th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
-                        Score
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--app-card-border)]">
-                    {entries.slice(0, 10).map((entry, index) => (
-                      <tr key={index} className={entry.userFid === userFid ? "bg-[var(--app-accent-light)]" : ""}>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <div className="flex items-center">
-                            <div className="h-8 w-8 rounded-full bg-[var(--app-gray)] flex items-center justify-center mr-2">
-                              {entry.displayName?.charAt(0) || `F${entry.userFid.toString().slice(-4)}`}
-                            </div>
-                            <span>{entry.displayName || `Farcaster #${entry.userFid}`}</span>
-                            {entry.userFid === userFid && (
-                              <span className="ml-2 text-xs text-[var(--app-accent)]">(You)</span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {personalityTypes[entry.personalityType]?.title || entry.personalityType}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {entry.score}/{Object.keys(personalityTypes).length}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Results table */}
+              <div className="mb-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-md font-medium">
+                    {activeFilter ? 
+                      activeFilter === 'compatible' ? 
+                        'Compatible Personalities' : 
+                        `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Types` 
+                      : 'Recent Results'}
+                  </h4>
+                  <span className="text-sm text-[var(--app-foreground-muted)]">
+                    {isFiltering ? (
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 mr-2 border-2 border-[var(--app-accent)] border-t-transparent rounded-full animate-spin"></div>
+                        Filtering...
+                      </div>
+                    ) : (
+                      `${filteredEntries.length} ${filteredEntries.length === 1 ? 'result' : 'results'}`
+                    )}
+                  </span>
+                </div>
+                {!isFiltering && filteredEntries.length === 0 ? (
+                  <p className="text-center text-[var(--app-foreground-muted)] py-4 mt-4">
+                    No users found with this filter.
+                  </p>
+                ) : (
+                  <div className="overflow-hidden rounded-lg border border-[var(--app-card-border)] mt-3">
+                    <table className="min-w-full divide-y divide-[var(--app-card-border)]">
+                      <thead className="bg-[var(--app-gray)]">
+                        <tr>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
+                            User
+                          </th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
+                            Personality
+                          </th>
+                          <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-[var(--app-foreground-muted)] uppercase tracking-wider">
+                            Score
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--app-card-border)]">
+                        {!isFiltering && filteredEntries.slice(0, 10).map((entry, index) => (
+                          <tr key={index} className={entry.userFid === userFid ? "bg-[var(--app-accent-light)]" : ""}>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">
+                              <div className="flex items-center">
+                                <div className="h-8 w-8 rounded-full bg-[var(--app-gray)] flex items-center justify-center mr-2">
+                                  {entry.displayName?.charAt(0) || `F${entry.userFid.toString().slice(-4)}`}
+                                </div>
+                                <span>{entry.displayName || `Farcaster #${entry.userFid}`}</span>
+                                {entry.userFid === userFid && (
+                                  <span className="ml-2 text-xs text-[var(--app-accent)]">(You)</span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">
+                              {personalityTypes[entry.personalityType]?.title || entry.personalityType}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">
+                              {entry.score}/{Object.keys(personalityTypes).length}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </>
           )}
