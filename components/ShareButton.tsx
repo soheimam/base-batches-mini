@@ -17,10 +17,13 @@ export function ShareButton({ userFid, quizResult }: ShareButtonProps) {
     try {
       setIsSharing(true);
       
-      let text = 'Check out my profile on MiniApp! 🎉';
-      let imageUrl = `https://my-mini-batches-social.vercel.app/api/dynamic-share-image/${userFid}`;
+      // Use same image URL for all shares - only showing FID
+      const imageUrl = `https://my-mini-batches-social.vercel.app/api/dynamic-share-image/${userFid}`;
       
-      // If we have quiz results, customize the share content
+      // Default text
+      let text = 'Check out my profile on MiniApp! 🎉';
+      
+      // If we have quiz results, customize only the text content
       if (quizResult) {
         const personalityTypes = {
           'builder': 'The Builder',
@@ -32,9 +35,6 @@ export function ShareButton({ userFid, quizResult }: ShareButtonProps) {
         const personalityTitle = personalityTypes[quizResult.personalityType] || quizResult.personalityType;
         
         text = `I took the Web3 Personality Quiz and I'm "${personalityTitle}"! Take it yourself and see what you get. 🧠`;
-        
-        // Include the personality type in the path instead of as a query parameter
-        imageUrl = `https://my-mini-batches-social.vercel.app/api/dynamic-share-image/${userFid}/${quizResult.personalityType}`;
       }
 
       // Launch the Farcaster composer with the image as an embed
