@@ -23,7 +23,7 @@ import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
 // import { Home } from "./components/DemoComponents";
 // import { Features } from "./components/DemoComponents";
-import { ShareButton } from "./components/ShareButoon";
+import { ShareButton } from "./components/ShareButton";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
