@@ -13,8 +13,8 @@ export function ShareButton({ userFid }: ShareButtonProps) {
       setIsSharing(true);
       
       // 1. Construct your dynamic-image URL for sharing
-      // Use the full absolute URL for the image embed
-      const imageUrl = `${process.env.NEXT_PUBLIC_URL}/api/dynamic-share-image/${userFid}`;
+      // Use the known endpoint URL for the image embed
+      const imageUrl = `https://my-mini-batches-social.vercel.app/api/dynamic-share-image/${userFid}`;
 
       // 2. Launch the Farcaster composer with that image as an embed
       await sdk.actions.composeCast({
