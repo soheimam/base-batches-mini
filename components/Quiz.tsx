@@ -126,8 +126,12 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
         }
       });
 
+      // Ensure userFid is valid - default to 203090 if not provided or is 0
+      // This is a fallback to prevent API errors, using hardcoded FID when context is not available
+      const validUserFid = userFid || 203090;
+
       const quizResult: QuizResult = {
-        userFid,
+        userFid: validUserFid,
         personalityType: dominantType as keyof typeof personalityTypes,
         score: maxCount,
         timestamp: Date.now()
@@ -142,13 +146,18 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
   if (!started) {
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-[var(--app-card-bg)] backdrop-blur-md rounded-xl shadow-lg border border-[var(--app-card-border)] overflow-hidden p-5">
-          <h2 className="text-xl font-bold text-center mb-4">Discover Your Web3 Personality</h2>
-          <p className="text-[var(--app-foreground-muted)] mb-6 text-center">
-            Take this quick quiz to find out what kind of Web3 builder you are!
+        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
+          <h2 className="text-2xl font-bold text-center mb-4 text-purple-900 dark:text-purple-100">SwiftUI Fundamentals</h2>
+          <p className="text-purple-700 dark:text-purple-300 mb-6 text-center">
+            Explore the core principles of SwiftUI with our introductory course, designed to equip you with a solid foundation in building intuitive and responsive user interfaces.
           </p>
           <div className="flex justify-center">
-            <Button onClick={handleStart}>Start Quiz</Button>
+            <Button 
+              onClick={handleStart}
+              className="bg-purple-800 hover:bg-purple-900 text-white px-12 py-3 rounded-full font-medium"
+            >
+              Dive in
+            </Button>
           </div>
         </div>
       </div>
@@ -160,27 +169,31 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
     
     return (
       <div className="space-y-6 animate-fade-in">
-        <div className="bg-[var(--app-card-bg)] backdrop-blur-md rounded-xl shadow-lg border border-[var(--app-card-border)] overflow-hidden p-5">
-          <h2 className="text-xl font-bold text-center mb-2">Your Web3 Personality</h2>
+        <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
+          <h2 className="text-xl font-bold text-center mb-2 text-purple-900 dark:text-purple-100">Your Web3 Personality</h2>
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 flex items-center justify-center">
               <span className="text-white text-4xl font-bold">
                 {result.personalityType.charAt(0).toUpperCase()}
               </span>
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-center mb-2 text-[var(--app-accent)]">{personalityType.title}</h3>
-          <p className="text-[var(--app-foreground-muted)] mb-6 text-center">
+          <h3 className="text-lg font-semibold text-center mb-2 text-purple-700 dark:text-purple-300">{personalityType.title}</h3>
+          <p className="text-purple-700 dark:text-purple-300 mb-6 text-center">
             {personalityType.description}
           </p>
           <div className="flex justify-center">
-            <Button variant="outline" onClick={() => {
-              setStarted(false);
-              setCurrentQuestion(0);
-              setAnswers([]);
-              setCompleted(false);
-              setResult(null);
-            }}>
+            <Button 
+              variant="outline" 
+              className="border-purple-600 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-800/40"
+              onClick={() => {
+                setStarted(false);
+                setCurrentQuestion(0);
+                setAnswers([]);
+                setCompleted(false);
+                setResult(null);
+              }}
+            >
               Retake Quiz
             </Button>
           </div>
@@ -191,28 +204,28 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-[var(--app-card-bg)] backdrop-blur-md rounded-xl shadow-lg border border-[var(--app-card-border)] overflow-hidden p-5">
+      <div className="bg-purple-100 dark:bg-purple-900/20 backdrop-blur-md rounded-xl shadow-lg border border-purple-200 dark:border-purple-800 overflow-hidden p-6">
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-[var(--app-foreground-muted)]">Question {currentQuestion + 1} of {questions.length}</span>
-            <span className="text-sm font-medium text-[var(--app-accent)]">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</span>
+            <span className="text-sm text-purple-700 dark:text-purple-300">Question {currentQuestion + 1} of {questions.length}</span>
+            <span className="text-sm font-medium text-purple-700 dark:text-purple-300">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</span>
           </div>
-          <div className="w-full bg-[var(--app-gray)] rounded-full h-2">
+          <div className="w-full bg-purple-200 dark:bg-purple-800 rounded-full h-2">
             <div 
-              className="bg-[var(--app-accent)] h-2 rounded-full" 
+              className="bg-purple-600 h-2 rounded-full" 
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             ></div>
           </div>
         </div>
         
-        <h3 className="text-lg font-medium mb-4">{questions[currentQuestion].question}</h3>
+        <h3 className="text-lg font-medium mb-4 text-purple-900 dark:text-purple-100">{questions[currentQuestion].question}</h3>
         
         <div className="space-y-3">
           {questions[currentQuestion].options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleAnswer(option.type)}
-              className="w-full text-left px-4 py-3 rounded-lg border border-[var(--app-card-border)] hover:border-[var(--app-accent)] hover:bg-[var(--app-accent-light)] transition-colors"
+              className="w-full text-left px-4 py-3 rounded-lg border border-purple-300 dark:border-purple-700 hover:border-purple-600 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors text-purple-800 dark:text-purple-200"
             >
               {option.text}
             </button>

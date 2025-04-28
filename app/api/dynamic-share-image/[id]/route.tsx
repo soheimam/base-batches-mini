@@ -16,26 +16,26 @@ const personalityTypes = {
   'builder': {
     title: 'The Builder',
     description: 'Practical, hands-on, and loves creating things',
-    gradientFrom: '#3b82f6', // blue-500
-    gradientTo: '#22d3ee',   // cyan-400
+    gradientFrom: '#8b5cf6', // purple-500
+    gradientTo: '#c084fc',   // purple-400
   },
   'visionary': {
     title: 'The Visionary',
     description: 'Future-oriented, creative, and sees possibilities',
     gradientFrom: '#8b5cf6', // purple-500
-    gradientTo: '#f472b6',   // pink-400
+    gradientTo: '#c084fc',   // purple-400
   },
   'connector': {
     title: 'The Connector',
     description: 'Social, empathetic, and brings people together',
-    gradientFrom: '#22c55e', // green-500
-    gradientTo: '#10b981',   // emerald-400
+    gradientFrom: '#8b5cf6', // purple-500
+    gradientTo: '#c084fc',   // purple-400
   },
   'analyst': {
     title: 'The Analyst',
     description: 'Logical, detail-oriented, and research-driven',
-    gradientFrom: '#eab308', // yellow-500
-    gradientTo: '#f59e0b',   // amber-400
+    gradientFrom: '#8b5cf6', // purple-500
+    gradientTo: '#c084fc',   // purple-400
   }
 };
 
@@ -74,7 +74,7 @@ export async function GET(
     if (personalityType && personalityTypes[personalityType as keyof typeof personalityTypes]) {
       const personality = personalityTypes[personalityType as keyof typeof personalityTypes];
       const titleFontData = await loadGoogleFont("Inter:wght@800", personality.title);
-      const textFontData = await loadGoogleFont("Inter", "Web3 Personality Quiz");
+      const textFontData = await loadGoogleFont("Inter", "SwiftUI Fundamentals");
       
       return new ImageResponse(
         (
@@ -93,13 +93,24 @@ export async function GET(
               fontFamily: 'Inter',
             }}
           >
+            <img
+              src={`data:image/png;base64,${Buffer.from(logoImage).toString(
+                "base64"
+              )}`}
+              style={{
+                width: "80px",
+                marginBottom: "20px",
+                borderRadius: "10px",
+              }}
+            />
+            
             <div style={{ 
               fontSize: 28, 
               opacity: 0.9, 
               marginBottom: '20px',
               fontWeight: 'bold'
             }}>
-              WEB3 PERSONALITY QUIZ
+              SWIFTUI FUNDAMENTALS
             </div>
             
             <div style={{ 
@@ -155,7 +166,8 @@ export async function GET(
 
     // Default image if no personality type is provided
     // Load and prepare the custom font with the text to be rendered
-    const fontData = await loadGoogleFont("Press+Start+2P", "Example ID:" + id);
+    const fontData = await loadGoogleFont("Inter:wght@600", "SwiftUI Fundamentals");
+    const bodyFontData = await loadGoogleFont("Inter", "Explore the core principles of SwiftUI");
 
     // Generate and return the image response with the composed elements
     return new ImageResponse(
@@ -169,33 +181,61 @@ export async function GET(
             justifyContent: "center",
             alignItems: "center",
             position: "relative",
-            backgroundColor: "white",
+            background: "linear-gradient(to bottom right, #8b5cf6, #c084fc)",
+            color: "white",
             gap: "20px",
+            padding: "40px",
           }}
         >
-          {/* Render the logo image */}
           <img
             src={`data:image/png;base64,${Buffer.from(logoImage).toString(
               "base64"
             )}`}
             style={{
-              width: "100px",
+              width: "80px",
               marginBottom: "20px",
               borderRadius: "10px",
             }}
           />
-          {/* Display the example ID with custom styling */}
+          
           <div
             style={{
-              position: "relative",
-              color: "black",
-              fontSize: 48,
-              fontFamily: "PressStart2P",
-              textAlign: "center",
-              display: "flex",
+              fontSize: 60,
+              fontWeight: "bold",
+              fontFamily: "InterBold",
+              marginBottom: "20px",
             }}
           >
-            Example ID: {id}
+            SwiftUI Fundamentals
+          </div>
+          
+          <div
+            style={{
+              fontSize: 28,
+              opacity: 0.9,
+              fontFamily: "Inter",
+              textAlign: "center",
+              maxWidth: "70%",
+              marginBottom: "20px",
+            }}
+          >
+            Explore the core principles of SwiftUI with our introductory course
+          </div>
+          
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(255, 255, 255, 0.2)",
+              borderRadius: "16px",
+              padding: "16px 32px",
+              fontWeight: "500",
+              fontSize: "24px",
+              marginTop: "20px",
+            }}
+          >
+            Farcaster #{id}
           </div>
         </div>
       ),
@@ -204,7 +244,12 @@ export async function GET(
         // Configure the custom font for use in the image
         fonts: [
           {
-            name: "PressStart2P",
+            name: "Inter",
+            data: bodyFontData,
+            style: "normal",
+          },
+          {
+            name: "InterBold",
             data: fontData,
             style: "normal",
           },

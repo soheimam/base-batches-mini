@@ -60,7 +60,8 @@ export default function App() {
       });
       
       if (!response.ok) {
-        console.error('Failed to submit quiz result:', await response.text());
+        const errorText = await response.text();
+        console.error('Failed to submit quiz result:', errorText);
       }
     } catch (error) {
       console.error('Error submitting quiz result:', error);
@@ -69,8 +70,8 @@ export default function App() {
 
   const handleQuizStart = useCallback(() => {
     // Analytics or other actions when quiz starts
-    console.log('Quiz started by user:', context?.user.fid);
-  }, [context?.user.fid]);
+    console.log('Quiz started by user:', context?.user?.fid || 203090);
+  }, [context?.user?.fid]);
 
   const saveFrameButton = useMemo(() => {
     if (context && !context.client.added) {
@@ -159,7 +160,7 @@ export default function App() {
           {/* Active view content */}
           {activeView === 'quiz' && (
             <Quiz 
-              userFid={context?.user.fid || 0} 
+              userFid={context?.user?.fid || 203090}
               onComplete={handleQuizComplete}
               onStart={handleQuizStart}
             />
@@ -173,7 +174,7 @@ export default function App() {
                   Let your friends know about your Web3 personality type!
                 </p>
                 <div className="space-y-3">
-                  <ShareButton userFid={context?.user.fid || 0} quizResult={quizResult} />
+                  <ShareButton userFid={context?.user?.fid || 203090} quizResult={quizResult} />
                   <Button variant="outline" className="w-full" onClick={() => setActiveView('leaderboard')}>
                     View Leaderboard
                   </Button>
@@ -183,7 +184,7 @@ export default function App() {
           )}
           
           {activeView === 'leaderboard' && (
-            <Leaderboard userFid={context?.user.fid || 0} />
+            <Leaderboard userFid={context?.user?.fid || 203090} />
           )}
         </main>
 

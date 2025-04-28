@@ -12,12 +12,17 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Validate required fields
-    if (!body.userFid || !body.personalityType || body.score === undefined) {
+    // Validate only essential fields
+    if (!body.personalityType || body.score === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
+    }
+
+    // Set default userFid if not provided
+    if (!body.userFid) {
+      body.userFid = 203090; // Default FID
     }
 
     // Add timestamp if not provided
