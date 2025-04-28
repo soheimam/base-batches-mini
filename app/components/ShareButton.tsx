@@ -18,7 +18,7 @@ export function ShareButton({ userFid }: ShareButtonProps) {
 
       // 2. Launch the Farcaster composer with that image as an embed
       await sdk.actions.composeCast({
-        text: `Check out my profile on MiniApp! 🎉`,
+        text: `Its me, hi, Im the problem, its me.” 🎤`,
         embeds: [imageUrl],
       });
     } catch (error) {
