@@ -11,6 +11,7 @@ const size = {
   height: 400,
 };
 
+//  Thankyou to the builider Garden and Limone for the original code https://github.com/builders-garden/base-minikit-starter
 /**
  * GET handler for generating dynamic OpenGraph images
  * @param request - The incoming HTTP request
