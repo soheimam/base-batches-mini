@@ -147,9 +147,9 @@ export function Quiz({ userFid, onComplete, onStart }: QuizProps) {
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="text-center p-6">
-          <h2 className="text-2xl font-bold mb-4 text-purple-900 dark:text-purple-100">SwiftUI Fundamentals</h2>
+          <h2 className="text-2xl font-bold mb-4 text-purple-900 dark:text-purple-100">Builder Fundamentals Quiz</h2>
           <p className="text-purple-700 dark:text-purple-300 mb-8">
-            Explore the core principles of SwiftUI with our introductory course, designed to equip you with a solid foundation in building intuitive and responsive user interfaces.
+            Explore the core principles of our Builder Fundamentals quiz, to help you understand your builder personality.
           </p>
           <div className="flex justify-center">
             <Button 
