@@ -98,7 +98,7 @@ export default function App() {
 
         <main className="flex-1">
           <h1>Welcome to the MiniApp {context?.user.displayName}</h1>
-          <ShareButton userFid={context?.user.fid ?? 20390} />
+          <ShareButton userFid={context?.user.fid || 20390} />
         </main>
 
         <footer className="mt-2 pt-4 flex justify-center">
