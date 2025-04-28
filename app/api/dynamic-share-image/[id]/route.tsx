@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 
 // Define the dimensions for the generated OpenGraph image
 const size = {
-  width: 600,
-  height: 400,
+  width: 1200,
+  height: 630,
 };
 
 // Personality types and their descriptions
@@ -16,18 +16,22 @@ const personalityTypes = {
   'builder': {
     title: 'The Builder',
     description: 'Practical, hands-on, and loves creating things',
+    color: '#4C1D95', // Deep purple background
   },
   'visionary': {
     title: 'The Visionary',
     description: 'Future-oriented, creative, and sees possibilities',
+    color: '#5B21B6', // Purple background
   },
   'connector': {
     title: 'The Connector',
     description: 'Social, empathetic, and brings people together',
+    color: '#6D28D9', // Lighter purple background
   },
   'analyst': {
     title: 'The Analyst',
     description: 'Logical, detail-oriented, and research-driven',
+    color: '#7C3AED', // Violet background
   }
 };
 
@@ -89,61 +93,85 @@ export async function GET(
             justifyContent: "center",
             alignItems: "center",
             position: "relative",
-            backgroundColor: "#8b5cf6", // Purple background
+            backgroundColor: personality.color,
+            backgroundImage: "linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent)",
+            backgroundSize: "100px 100px",
             color: "white",
-            gap: "20px",
-            padding: "20px",
+            padding: "40px",
           }}
         >
-          <img
-            src={`data:image/png;base64,${Buffer.from(logoImage).toString("base64")}`}
-            style={{
-              width: "100px",
-              marginBottom: "20px",
-              borderRadius: "10px",
-            }}
-          />
-          
           <div
             style={{
-              fontSize: 24,
-              fontFamily: "PressStart2P",
-              marginBottom: "10px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.3)",
+              borderRadius: "20px",
+              padding: "40px",
+              width: "90%",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             }}
           >
-            My Web3 Personality:
-          </div>
-          
-          <div
-            style={{
-              fontSize: 28,
-              fontFamily: "PressStart2P",
-              marginBottom: "10px",
-              color: "#ffffff",
-            }}
-          >
-            {personality.title}
-          </div>
-          
-          <div
-            style={{
-              fontSize: 16,
-              fontFamily: "PressStart2P",
-              textAlign: "center",
-              marginBottom: "20px",
-              maxWidth: "80%",
-            }}
-          >
-            {personality.description}
-          </div>
-          
-          <div
-            style={{
-              fontSize: 14,
-              fontFamily: "PressStart2P",
-            }}
-          >
-            Farcaster #{id}
+            <img
+              src={`data:image/png;base64,${Buffer.from(logoImage).toString("base64")}`}
+              style={{
+                width: "120px",
+                marginBottom: "30px",
+                borderRadius: "15px",
+                border: "4px solid white",
+              }}
+            />
+            
+            <div
+              style={{
+                fontSize: 32,
+                fontFamily: "PressStart2P",
+                marginBottom: "20px",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                color: "white",
+              }}
+            >
+              My Web3 Personality:
+            </div>
+            
+            <div
+              style={{
+                fontSize: 48,
+                fontFamily: "PressStart2P",
+                marginBottom: "20px",
+                color: "white",
+                textShadow: "3px 3px 6px rgba(0,0,0,0.5)",
+              }}
+            >
+              {personality.title}
+            </div>
+            
+            <div
+              style={{
+                fontSize: 24,
+                fontFamily: "PressStart2P",
+                textAlign: "center",
+                marginBottom: "30px",
+                maxWidth: "80%",
+                color: "white",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              {personality.description}
+            </div>
+            
+            <div
+              style={{
+                fontSize: 20,
+                fontFamily: "PressStart2P",
+                color: "white",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                marginTop: "10px",
+              }}
+            >
+              Farcaster #{id}
+            </div>
           </div>
         </div>
       );
@@ -159,49 +187,72 @@ export async function GET(
             justifyContent: "center",
             alignItems: "center",
             position: "relative",
-            backgroundColor: "#8b5cf6", // Purple background
+            backgroundColor: "#7C3AED", // Violet background
+            backgroundImage: "linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent)",
+            backgroundSize: "100px 100px",
             color: "white",
-            gap: "20px",
-            padding: "20px",
+            padding: "40px",
           }}
         >
-          <img
-            src={`data:image/png;base64,${Buffer.from(logoImage).toString("base64")}`}
-            style={{
-              width: "100px",
-              marginBottom: "20px",
-              borderRadius: "10px",
-            }}
-          />
-          
           <div
             style={{
-              fontSize: 28,
-              fontFamily: "PressStart2P",
-              marginBottom: "10px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.3)",
+              borderRadius: "20px",
+              padding: "40px",
+              width: "90%",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             }}
           >
-            Web3 Personality Quiz
-          </div>
-          
-          <div
-            style={{
-              fontSize: 16,
-              fontFamily: "PressStart2P",
-              textAlign: "center",
-              marginBottom: "20px",
-            }}
-          >
-            Discover your Web3 personality!
-          </div>
-          
-          <div
-            style={{
-              fontSize: 14,
-              fontFamily: "PressStart2P",
-            }}
-          >
-            Farcaster #{id}
+            <img
+              src={`data:image/png;base64,${Buffer.from(logoImage).toString("base64")}`}
+              style={{
+                width: "120px",
+                marginBottom: "30px",
+                borderRadius: "15px",
+                border: "4px solid white",
+              }}
+            />
+            
+            <div
+              style={{
+                fontSize: 48,
+                fontFamily: "PressStart2P",
+                marginBottom: "20px",
+                color: "white",
+                textShadow: "3px 3px 6px rgba(0,0,0,0.5)",
+              }}
+            >
+              Web3 Personality Quiz
+            </div>
+            
+            <div
+              style={{
+                fontSize: 24,
+                fontFamily: "PressStart2P",
+                textAlign: "center",
+                marginBottom: "30px",
+                color: "white",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              Discover your Web3 personality!
+            </div>
+            
+            <div
+              style={{
+                fontSize: 20,
+                fontFamily: "PressStart2P",
+                color: "white",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                marginTop: "10px",
+              }}
+            >
+              Farcaster #{id}
+            </div>
           </div>
         </div>
       );
